@@ -1,4 +1,4 @@
-async function test(name) {
+async function req(name) {
     let songs=[];
     let albums=[];
     let artists=[];
