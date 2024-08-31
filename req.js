@@ -43,4 +43,3 @@ async function requ(name) {
         "artists":artists,
         "playlists":playlists}
 }
-export default requ;

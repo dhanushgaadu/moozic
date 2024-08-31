@@ -15,13 +15,13 @@ export default function App() {
   return (
     <View style={styles.container} >
       <Searchbar
+        color="black"
         placeholder="Search"
         onChangeText={setQuery}
         onSubmitEditing={() => setSearchQuery(Query)}
         value={Query}
         style={styles.input}
       />
-    
       <StatusBar style="auto" />
     </View>
   );
@@ -34,13 +34,15 @@ function Songs({ data }, { index }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#272727',
     alignItems: 'center',
     justifyContent: 'center',
   },
   input: {
     width: '90%',
     margin: 10,
+    backgroundColor: 'grey',
+    borderRadius: 50,
   },
   songfont:{
     fontSize: 20,
