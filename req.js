@@ -1,4 +1,4 @@
-async function test(name) {
+async function requ(name) {
     let songs=[];
     let albums=[];
     let artists=[];
@@ -43,3 +43,4 @@ async function test(name) {
         "artists":artists,
         "playlists":playlists}
 }
+export default requ;
