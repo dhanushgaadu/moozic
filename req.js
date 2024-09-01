@@ -1,4 +1,5 @@
 async function requ(name) {
+    let top = [];
     let songs=[];
     let albums=[];
     let artists=[];
@@ -38,13 +39,12 @@ async function requ(name) {
             url: data["data"]["playlists"]["results"][i]["url"]
         })
     }
-    return {"songs":songs,
+      return {
+        "songs":songs,
         "albums":albums,
         "artists":artists,
         "playlists":playlists}
 }
 requ("fien").then((data)=>
-data["songs"].map((song,index)=>{
-    console.log(song[index]["title"])
-})
+    console.log(data)
 )

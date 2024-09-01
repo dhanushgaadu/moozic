@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, Image, FlatList } from 'react-native';
+import { StyleSheet, View, Text, Image, FlatList, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Searchbar } from 'react-native-paper';
 export default function App() {
@@ -21,6 +21,7 @@ export default function App() {
   }, [searchQuery]);
   return (
     <View style={styles.container} >
+      <Text style={styles.mainhead}>Search</Text>
       <Searchbar
         color="black"
         placeholder="Search"
@@ -28,8 +29,18 @@ export default function App() {
         onSubmitEditing={() => setSearchQuery(Query)}
         value={Query}
         style={styles.input}
-      />
-      {data["songs"]? <SongCards data={data} /> : null}
+      /><ScrollView style={{width:"100%",height:"60&"}}>
+      {data["songs"] ? <View><Text style={styles.headtext}>songs :</Text><SongCards data={data} /></View> : null}
+      {data["albums"] ? <View><Text style={styles.headtext}>albums:</Text><AlbumCards data={data} /></View> : null}
+      {data["artists"] ? <View>
+        <Text style={styles.headtext}>artists:</Text>
+        <ArtistCards data={data} />
+      </View> : null}
+      {data["playlists"] ? <View>
+        <Text style={styles.headtext}>playlists:</Text>
+        <PlaylistCards data={data} />
+      </View>: null}
+      </ScrollView>
       <StatusBar style="auto" />
     </View>
   );
@@ -47,8 +58,57 @@ function SongCards({ data }) {
     )
   }
 }
+function AlbumCards({ data }) {
+  {
+    return data["albums"].map((album, index) => {
+      return (
+        <View key={index} style={styles.card}>
+          <Image style={styles.image} source={{ uri: album.image }} />
+          <Text style={styles.text}>{album.title}</Text>
+        </View>
+      )
+    }
+    )
+  }
+}
+function ArtistCards({ data }) {
+  {
+    return data["artists"].map((artist, index) => {
+      return (
+        <View key={index} style={styles.card}>
+          <Image style={styles.image} source={{ uri: artist.image }} />
+          <Text style={styles.text}>{artist.title}</Text>
+        </View>
+      )
+    }
+    )
+  }
+}
+function PlaylistCards({ data }) {
+  {
+    return data["playlists"].map((playlist, index) => {
+      return (
+        <View key={index} style={styles.card}>
+          <Image style={styles.image} source={{ uri: playlist.image }} />
+          <Text style={styles.text}>{playlist.title}</Text>
+        </View>
+      )
+    }
+    )
+  }
+}
 
 const styles = StyleSheet.create({
+  headtext: {
+    color: 'white',
+    fontSize: 20,
+    alignSelf: 'center',
+    margin: 10,
+    backgroundColor: 'grey',
+    borderRadius: 50,
+    padding: 10,
+
+  },
   container: {
     flex: 1,
     backgroundColor: '#272727',
@@ -56,6 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
+    marginTop: 20,
     width: '90%',
     margin: 10,
     backgroundColor: 'grey',
@@ -70,12 +131,13 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '90%',
     overflow: 'hidden',
-
+    display: 'flex',
+     
   },
   text: {
     color: 'white',
     fontSize: 20,
-  },
+    marginLeft: 20,},
   button: {
     margin: 10,
     borderRadius: 50,
