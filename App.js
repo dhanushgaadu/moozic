@@ -1,16 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, Image, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { Searchbar, Card, Button } from 'react-native-paper';
+import { Searchbar } from 'react-native-paper';
 export default function App() {
   const [Query, setQuery] = useState('');
-  const [searchQuery, setSearchQuery] = useState('believer');
+  const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState([]);
   useEffect(() => {
-    req(searchQuery).then((data) => {
-      setData(data);
-      console.log(data["songs"][0]["image"][2]["url"])
-    })
+    if (searchQuery) {
+      req(searchQuery).then((data) => {
+        setData(data);
+        if (data) {
+          console.log(data)
+        }
+      })
+    }
+    return () => {
+      setData([]);
+    }
   }, [searchQuery]);
   return (
     <View style={styles.container} >
@@ -22,15 +29,25 @@ export default function App() {
         value={Query}
         style={styles.input}
       />
+      {data["songs"]? <SongCards data={data} /> : null}
       <StatusBar style="auto" />
     </View>
   );
 }
-function Songs({ data }, { index }) {
-  return (
-    <Text stlye={styles.songfont}>{data["songs"][{index}]["title"]}</Text>
-  );
+function SongCards({ data }) {
+  {
+    return data["songs"].map((song, index) => {
+      return (
+        <View key={index} style={styles.card}>
+          <Image style={styles.image} source={{ uri: song.image }} />
+          <Text style={styles.text}>{song.title}</Text>
+        </View>
+      )
+    }
+    )
+  }
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -44,13 +61,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
     borderRadius: 50,
   },
-  songfont:{
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
+  card: {
+    backgroundColor: 'grey',
+    margin: 10,
+    borderRadius: 30,
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: 10,
+    width: '90%',
+    overflow: 'hidden',
 
-    
-  }
+  },
+  text: {
+    color: 'white',
+    fontSize: 20,
+  },
+  button: {
+    margin: 10,
+    borderRadius: 50,
+  },
+  image: {
+    width: 100,
+    height: 100,
+  },
 });
 
 async function req(name) {
@@ -67,14 +100,14 @@ async function req(name) {
     songs.push({
       title: data["data"]["songs"]["results"][i]["title"],
       album: data["data"]["songs"]["results"][i]["album"],
-      image: data["data"]["songs"]["results"][i]["image"],
+      image: data["data"]["songs"]["results"][i]["image"][2]["url"],
       url: data["data"]["songs"]["results"][i]["url"]
     })
   }
   for (let i = 0; i < data["data"]["albums"]["results"].length; i++) {
     albums.push({
       title: data["data"]["albums"]["results"][i]["title"],
-      image: data["data"]["albums"]["results"][i]["image"],
+      image: data["data"]["albums"]["results"][i]["image"][2]["url"],
       url: data["data"]["albums"]["results"][i]["url"]
 
     })
@@ -82,13 +115,13 @@ async function req(name) {
   for (let i = 0; i < data["data"]["artists"]["results"].length; i++) {
     artists.push({
       title: data["data"]["artists"]["results"][i]["title"],
-      image: data["data"]["artists"]["results"][i]["image"],
+      image: data["data"]["artists"]["results"][i]["image"][2]["url"],
     })
   }
   for (let i = 0; i < data["data"]["playlists"]["results"].length; i++) {
     playlists.push({
       title: data["data"]["playlists"]["results"][i]["title"],
-      image: data["data"]["playlists"]["results"][i]["image"],
+      image: data["data"]["playlists"]["results"][i]["image"][2]["url"],
       url: data["data"]["playlists"]["results"][i]["url"]
     })
   }

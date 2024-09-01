@@ -43,3 +43,8 @@ async function requ(name) {
         "artists":artists,
         "playlists":playlists}
 }
+requ("fien").then((data)=>
+data["songs"].map((song,index)=>{
+    console.log(song[index]["title"])
+})
+)
