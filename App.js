@@ -2,11 +2,12 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Searchbar } from 'react-native-paper';
-import {req,moresongs} from './api.js';
+import { req, more} from './api.js';
 export default function App() {
   const [Query, setQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState([]);
+  const[clicked,setmore]=useState([false,""]);
   useEffect(() => {
     if (searchQuery) {
       req(searchQuery).then((data) => {
@@ -17,6 +18,17 @@ export default function App() {
       setData([]);
     }
   }, [searchQuery]);
+  const handlemore = (wt,txt,data) => {
+    more(wt,txt).then((dat) => {
+      data[wt]=dat;
+      setData(data);
+    })
+  }
+  useEffect(() => {
+    if(clicked[0]){
+      handlemore(clicked[1],searchQuery,data);
+    }
+  }, [clicked]);
   return (
     <View style={styles.container} >
       <Text style={styles.mainhead}>Search</Text>
@@ -29,14 +41,42 @@ export default function App() {
         style={styles.input}
       />
       {data ? (<ScrollView style={{ width: "100%", height: "60&" }}>
-        {data["songs"] ? <View style={styles.element}><Options txt={"songs"} /><SongCards data={data} /></View> : null}
-        {data["albums"] ? <View style={styles.element}><Text style={styles.headtext}>albums:</Text><AlbumCards data={data} /></View> : null}
+        {data["songs"] ? <View style={styles.element}><View style={{
+          flexDirection: "row",
+          alignitems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <Text style={styles.headtext}>songs</Text>
+          <TouchableOpacity style={styles.more} onPress={()=>setmore([true,"songs"])}><Text style={{ fontSize: 20, color: "white" }}>more</Text></TouchableOpacity>
+        </View><SongCards data={data["songs"]} txt={"songs"} /></View> : null}
+        {data["albums"] ? <View style={styles.element}><View style={{
+          flexDirection: "row",
+          alignitems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <Text style={styles.headtext}>Albums</Text>
+          <TouchableOpacity style={styles.more} onPress={()=>setmore([true,"albums"])}><Text style={{ fontSize: 20, color: "white" }}>more</Text></TouchableOpacity>
+        </View><AlbumCards data={data["albums"]} /></View> : null}
         {data["artists"] ? <View style={styles.element}>
-          <Text style={styles.headtext}>artists:</Text>
+        <View style={{
+          flexDirection: "row",
+          alignitems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <Text style={styles.headtext}>Artists</Text>
+          <TouchableOpacity style={styles.more} onPress={()=>setmore([true,"artists"])}><Text style={{ fontSize: 20, color: "white" }}>more</Text></TouchableOpacity>
+        </View>
           <ArtistCards data={data} />
         </View> : null}
         {data["playlists"] ? <View style={styles.element}>
-          <Text style={styles.headtext}>playlists:</Text>
+        <View style={{
+          flexDirection: "row",
+          alignitems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <Text style={styles.headtext}>playlists</Text>
+          <TouchableOpacity style={styles.more} onPress={()=>setmore([true,"playlists"])}><Text style={{ fontSize: 20, color: "white" }}>more</Text></TouchableOpacity>
+        </View>
           <PlaylistCards data={data} />
         </View> : null}
       </ScrollView>) : null}
@@ -46,7 +86,7 @@ export default function App() {
 }
 function SongCards({ data }) {
   {
-    return data["songs"].map((song, index) => {
+    return data.map((song, index) => {
       return (
         <TouchableOpacity key={index} style={styles.card}>
           <Image style={styles.image} source={{ uri: song.image }} />
@@ -57,9 +97,10 @@ function SongCards({ data }) {
     )
   }
 }
+
 function AlbumCards({ data }) {
   {
-    return data["albums"].map((album, index) => {
+    return data.map((album, index) => {
       return (
         <TouchableOpacity key={index} style={styles.card}>
           <Image style={styles.image} source={{ uri: album.image }} />
@@ -95,18 +136,6 @@ function PlaylistCards({ data }) {
     }
     )
   }
-}
-function Options({ txt }) {
-  return (
-    <View style={{
-      flexDirection: "row",
-      alignitems: 'center',
-      justifyContent: 'space-between',
-    }}>
-      <Text style={styles.headtext}>{txt}</Text>
-      <TouchableOpacity style={styles.more} ><Text style={{fontSize:20,color:"white"}}>more</Text></TouchableOpacity>
-    </View>
-  )
 }
 
 const styles = StyleSheet.create({
