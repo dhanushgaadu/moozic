@@ -10,6 +10,7 @@ export async function req(name) {
     data = await res.json()
     for (let i = 0; i < data["data"]["songs"]["results"].length; i++) {
       songs.push({
+        id: data["data"]["songs"]["results"][i]["id"],
         title: data["data"]["songs"]["results"][i]["title"],
         album: data["data"]["songs"]["results"][i]["album"],
         image: data["data"]["songs"]["results"][i]["image"][2]["url"],
@@ -18,6 +19,7 @@ export async function req(name) {
     }
     for (let i = 0; i < data["data"]["albums"]["results"].length; i++) {
       albums.push({
+        id: data["data"]["albums"]["results"][i]["id"],
         title: data["data"]["albums"]["results"][i]["title"],
         image: data["data"]["albums"]["results"][i]["image"][2]["url"],
         url: data["data"]["albums"]["results"][i]["url"]
@@ -26,12 +28,14 @@ export async function req(name) {
     }
     for (let i = 0; i < data["data"]["artists"]["results"].length; i++) {
       artists.push({
+        id: data["data"]["artists"]["results"][i]["id"],
         title: data["data"]["artists"]["results"][i]["title"],
         image: data["data"]["artists"]["results"][i]["image"][2]["url"],
       })
     }
     for (let i = 0; i < data["data"]["playlists"]["results"].length; i++) {
       playlists.push({
+        id: data["data"]["playlists"]["results"][i]["id"],
         title: data["data"]["playlists"]["results"][i]["title"],
         image: data["data"]["playlists"]["results"][i]["image"][2]["url"],
         url: data["data"]["playlists"]["results"][i]["url"]
@@ -60,12 +64,13 @@ export async function more(what,name) {
     let songs = [];
     const res = await fetch("https://saavn.dev/api/search/"+what+"?query=" + name)
     if (!res.ok) {
-      throw new Error("Network response was not ok");
+      console.log("Network response was not ok");
     }
     data = await res.json()
     if (what==="songs"){
       for (let i = 0; i < data["data"]["results"].length; i++) {
         songs.push({
+          id: data["data"]["results"][i]["id"],
           title: data["data"]["results"][i]["name"],
           image: data["data"]["results"][i]["image"][2]["url"],
           url: data["data"]["results"][i]["downloadUrl"][2]["url"],
@@ -75,6 +80,7 @@ export async function more(what,name) {
     if (what==="albums"){
       for (let i = 0; i < data["data"]["results"].length; i++) {
         songs.push({
+          id: data["data"]["results"][i]["id"],
           title: data["data"]["results"][i]["name"],
           image: data["data"]["results"][i]["image"][2]["url"],
           url: data["data"]["results"][i]["url"]
@@ -84,6 +90,7 @@ export async function more(what,name) {
     if (what==="artists"){
       for (let i = 0; i < data["data"]["results"].length; i++) {
         songs.push({
+          id: data["data"]["results"][i]["id"],
           title: data["data"]["results"][i]["name"],
           image: data["data"]["results"][i]["image"][2]["url"],
           url: data["data"]["results"][i]["url"]
@@ -93,6 +100,7 @@ export async function more(what,name) {
     if (what==="playlists"){
       for (let i = 0; i < data["data"]["results"].length; i++) {
         songs.push({
+          id: data["data"]["results"][i]["id"],
           title: data["data"]["results"][i]["name"],
           image: data["data"]["results"][i]["image"][2]["url"],
           url: data["data"]["results"][i]["url"]
@@ -101,3 +109,15 @@ export async function more(what,name) {
     }
     return songs
   }
+export async function getAudio(id) {
+  const res = await fetch("https://saavn.dev/api/songs/" + id)
+  if (!res.ok) {
+    console.log("Network response was not ok");
+  }
+  const data = await res.json()
+  return{
+    title:data["data"][0]["name"],
+    url:data["data"][0]["downloadUrl"][2]["url"],
+    image:data["data"][0]["image"][2]["url"],
+  }
+}
